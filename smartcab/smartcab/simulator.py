@@ -116,16 +116,16 @@ class Simulator(object):
             self.env.reset()
             while not self.env.done:
                 self.env.step()
-            #score after env done
             scores += [self.env.score()]
-        return np.average(scores)
+        self.score = np.average(scores)
+        return self.score
 
-    #evaluation needed for grid search
-    def score(self):
-        with open('score.csv') as f:
-            reader = csv.reader(f)
-            data = np.asarray(list(reader),dtype=np.float32)
-            return np.average(data)
+    #def score(self):
+    #    #return self.score
+    #    with open('score.csv') as f:
+    #        reader = csv.reader(f)
+    #        data = np.asarray(list(reader),dtype=np.float32)
+    #        return np.average(data)
         
 
     def render(self):

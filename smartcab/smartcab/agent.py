@@ -196,11 +196,11 @@ def run(params):
     # Now simulate it
     sim = Simulator(e, update_delay=0.0,silent=False)  # reduce update_delay to speed up simulation
     sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
-    return sim.score()
+    return params, sim.score()
 
 def run_silent(params):
     """Run the agent for a finite number of trials."""
-    print 'run_silent({})'.format(params)
+    #print 'run_silent({})'.format(params)
     # Set up environment and agent
     e = Environment(params)  # create environment (also adds some dummy traffic)
     a = e.create_agent(LearningAgent)  # create agent
@@ -209,10 +209,7 @@ def run_silent(params):
     # Now simulate it
     sim = Simulator(e, update_delay=0.0,silent=True)  # reduce update_delay to speed up simulation
     sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
-    return params, sim.score()
-
-
-
+    return params, sim.run(n_trials=params['max_epoch'])
 
 def gridSearch(valid_params):
     grid = ParameterGrid(valid_params)
@@ -249,6 +246,7 @@ def gridSearch_2(valid_params):
     maxParam = None
     maxScore = -99999.0
 
+    print res
     for param,score in res:
         if score > maxScore:
             maxScore = score
@@ -258,6 +256,6 @@ def gridSearch_2(valid_params):
     print 'max Param', maxParam
 
 if __name__ == '__main__':
-    #run(params) -- run once 
+    print run_silent(params) #-- run once 
     #gridSearch(valid_params)
-    gridSearch_2(valid_params)
+    #gridSearch_2(valid_params)
