@@ -1,4 +1,6 @@
 import os
+import numpy as np
+import csv
 import time
 import random
 import pygame
@@ -18,7 +20,7 @@ class Simulator(object):
         'orange'  : (255, 128,   0)
     }
 
-    def __init__(self, env, size=None, frame_delay=10, update_delay=1.0):
+    def __init__(self, env, size=None, frame_delay=10, update_delay=1.0,silent=False):
         self.env = env
         self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 1) * self.env.block_size)
         self.width, self.height = self.size
@@ -34,22 +36,34 @@ class Simulator(object):
         self.last_updated = 0.0
         self.update_delay = update_delay
 
-        pygame.init()
-        self.screen = pygame.display.set_mode(self.size)
+        self.silent = silent
 
-        self.agent_sprite_size = (32, 32)
-        self.agent_circle_radius = 10  # radius of circle, when using simple representation
-        for agent in self.env.agent_states:
-            agent._sprite = pygame.transform.smoothscale(pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
-            agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
+        if not self.silent:
+            pygame.init()
+            self.screen = pygame.display.set_mode(self.size)
 
-        self.font = pygame.font.Font(None, 28)
-        self.paused = False
+            self.agent_sprite_size = (32, 32)
+            self.agent_circle_radius = 10  # radius of circle, when using simple representation
+            for agent in self.env.agent_states:
+                agent._sprite = pygame.transform.smoothscale(pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
+                agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
 
-    def run(self, n_trials=1):
+            self.font = pygame.font.Font(None, 28)
+            self.paused = False
+
+    def run(self,n_trials=1):
+        if self.silent:
+            return self.run_silent(n_trials)
+        else:
+            return self.run_verbose(n_trials)
+
+    def run_verbose(self, n_trials=1):
+
         self.quit = False
+        scores = []
+        fscore = open('scores.csv','w+')
         for trial in xrange(n_trials):
-            print "Simulator.run(): Trial {}".format(trial)  # [debug]
+            #print "Simulator.run(): Trial {}".format(trial)  # [debug]
             self.env.reset()
             self.current_time = 0.0
             self.last_updated = 0.0
@@ -86,10 +100,33 @@ class Simulator(object):
                     self.quit = True
                 finally:
                     if self.quit or self.env.done:
+                        score = self.env.score()
+                        scores += [score]
+                        fscores.write(str(score) + '\n')
                         break
 
             if self.quit:
                 break
+        return np.average(scores)
+
+    def run_silent(self,n_trials=1):
+        """ training an agent for n_trials """
+        scores = []
+        for trial in xrange(n_trials):
+            self.env.reset()
+            while not self.env.done:
+                self.env.step()
+            #score after env done
+            scores += [self.env.score()]
+        return np.average(scores)
+
+    #evaluation needed for grid search
+    def score(self):
+        with open('score.csv') as f:
+            reader = csv.reader(f)
+            data = np.asarray(list(reader),dtype=np.float32)
+            return np.average(data)
+        
 
     def render(self):
         # Clear screen
@@ -147,7 +184,7 @@ class Simulator(object):
         pause_text = "[PAUSED] Press any key to continue..."
         self.screen.blit(self.font.render(pause_text, True, self.colors['cyan'], self.bg_color), (100, self.height - 40))
         pygame.display.flip()
-        print pause_text  # [debug]
+        #print pause_text  # [debug]
         while self.paused:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:

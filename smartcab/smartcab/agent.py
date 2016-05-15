@@ -1,10 +1,15 @@
 import random
 import math
+import time
+#import threading
+from multiprocessing import Pool
+#from scipy.optimize import brute
+from sklearn.grid_search import ParameterGrid
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
 from collections import defaultdict
-from params import params
+from params import params, valid_params
 
 class Entry:
     def __init__(self,state):
@@ -121,8 +126,8 @@ class LearningAgent(Agent):
         #print "LearningAgent.update(): deadline = {}, state = {}, action = {}, reward = {}".format(deadline, self.state, action, reward)  # [debug]
         #print "Q-Value : {}".format(self.qtable[entry])
         #print "# of total visited states : {}".format(len(self.qtable)) # sanity check
-        print "epsilon : {}".format(self.eps())
-        print "alpha : {}".format(self.alpha())
+        #print "epsilon : {}".format(self.eps())
+        #print "alpha : {}".format(self.alpha())
 
     def getRand(self):
         return random.randrange(4)
@@ -180,7 +185,8 @@ class LearningAgent(Agent):
         
 
 
-def run():
+
+def run(params):
     """Run the agent for a finite number of trials."""
     # Set up environment and agent
     e = Environment(params)  # create environment (also adds some dummy traffic)
@@ -188,9 +194,70 @@ def run():
     e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
     # Now simulate it
-    sim = Simulator(e, update_delay=0.0)  # reduce update_delay to speed up simulation
+    sim = Simulator(e, update_delay=0.0,silent=False)  # reduce update_delay to speed up simulation
     sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
+    return sim.score()
 
+def run_silent(params):
+    """Run the agent for a finite number of trials."""
+    print 'run_silent({})'.format(params)
+    # Set up environment and agent
+    e = Environment(params)  # create environment (also adds some dummy traffic)
+    a = e.create_agent(LearningAgent)  # create agent
+    e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+
+    # Now simulate it
+    sim = Simulator(e, update_delay=0.0,silent=True)  # reduce update_delay to speed up simulation
+    sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
+    return params, sim.score()
+
+
+
+
+def gridSearch(valid_params):
+    grid = ParameterGrid(valid_params)
+    best_params = None
+    best_score = -99999
+
+    total = len(grid)
+    start = time.time()
+    last = time.time()
+
+    for index, params in enumerate(grid):
+        print '{}/{}'.format(index,total)
+        try:
+            #score = run(params)
+            score = run_silent(params)
+            if score > best_score:
+                best_params = params
+                best_score = score
+        except Exception as inst:
+            print 'SWALLOWING EXCEPTION : CANT RISK ABORTING', inst
+
+        now = time.time()
+        print '{} seconds spent'.format(now - last)
+        last = now
+
+    print 'best params', best_params
+    print 'best score', best_score
+
+def gridSearch_2(valid_params):
+    pool = Pool(processes=4)              # start 4 worker processes
+    grid = ParameterGrid(valid_params)
+    res = pool.map(run_silent, grid)
+    
+    maxParam = None
+    maxScore = -99999.0
+
+    for param,score in res:
+        if score > maxScore:
+            maxScore = score
+            maxParam = param
+
+    print 'max Score', maxScore
+    print 'max Param', maxParam
 
 if __name__ == '__main__':
-    run()
+    #run(params) -- run once 
+    #gridSearch(valid_params)
+    gridSearch_2(valid_params)

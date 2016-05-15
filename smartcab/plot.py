@@ -11,8 +11,8 @@ last = False
 def plotcsv(name):
     with open(name + '.csv','rb') as f:
         reader = csv.reader(f)
-        
         data = np.asarray(list(reader),dtype=np.float32)
+        print 'avg', np.average(data)
 
         sectorSize = default_sectorSize
         if(len(data) < sectorSize):

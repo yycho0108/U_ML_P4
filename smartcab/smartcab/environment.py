@@ -64,9 +64,6 @@ class Environment(object):
         self.primary_agent = None  # to be set explicitly
         self.enforce_deadline = False
 
-        # Logging
-        self.fscore = open('score.csv','w+')
-
     def create_agent(self, agent_class, *args, **kwargs):
         agent = agent_class(self, *args, **kwargs)
         self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
@@ -95,7 +92,7 @@ class Environment(object):
 
         start_heading = random.choice(self.valid_headings)
         deadline = self.compute_dist(start, destination) * 5
-        print "Environment.reset(): Trial set up with start = {}, destination = {}, deadline = {}".format(start, destination, deadline)
+        #print "Environment.reset(): Trial set up with start = {}, destination = {}, deadline = {}".format(start, destination, deadline)
 
         # Initialize agent(s)
         for agent in self.agent_states.iterkeys():
@@ -105,9 +102,6 @@ class Environment(object):
                 'destination': destination if agent is self.primary_agent else None,
                 'deadline': deadline if agent is self.primary_agent else None}
             agent.reset(destination=(destination if agent is self.primary_agent else None))
-
-        # Logging
-        self.fscore.flush()
 
     def step(self):
         #print "Environment.step(): t = {}".format(self.t)  # [debug]
@@ -124,12 +118,8 @@ class Environment(object):
         if self.primary_agent is not None:
             if self.enforce_deadline and self.agent_states[self.primary_agent]['deadline'] <= 0:
                 self.done = True
-                print "Environment.reset(): Primary agent could not reach destination within deadline!"
+                #print "Environment.reset(): Primary agent could not reach destination within deadline!"
             self.agent_states[self.primary_agent]['deadline'] -= 1
-
-        if self.done is True:
-            self.fscore.write(str(self.score()))
-            self.fscore.write('\n')
 
 
 
@@ -166,6 +156,7 @@ class Environment(object):
         return self.agent_states[agent]['deadline'] if agent is self.primary_agent else None
 
     def act(self, agent, action):
+        params = self.params
         assert agent in self.agent_states, "Unknown agent!"
         assert action in self.valid_actions, "Invalid action!"
 
@@ -210,7 +201,7 @@ class Environment(object):
                     reward += params['reward_bonus']  # bonus
                     #pass
                 self.done = True
-                print "Environment.act(): Primary agent has reached destination!"  # [debug]
+                #print "Environment.act(): Primary agent has reached destination!"  # [debug]
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
             #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
 
