@@ -48,6 +48,7 @@ class Simulator(object):
 
     def run(self, n_trials=1):
         self.quit = False
+        fscore = open('score.csv','w+')
         for trial in xrange(n_trials):
             print "Simulator.run(): Trial {}".format(trial)  # [debug]
             self.env.reset()
@@ -83,6 +84,8 @@ class Simulator(object):
                     self.quit = True
                 finally:
                     if self.quit or self.env.done:
+                        fscore.write(str(self.env.score()))
+                        fscore.write('\n')
                         break
 
             if self.quit:

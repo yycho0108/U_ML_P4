@@ -201,6 +201,19 @@ class Environment(object):
         """L1 distance between two points."""
         return abs(b[0] - a[0]) + abs(b[1] - a[1])
 
+    def score(self):
+        """ custom function to evaluate agent's success """
+        if self.done:
+            if self.enforce_deadline:
+                if self.agent_states[self.primary_agent]['deadline'] <= 0:
+                    return -1 #fail
+                else:
+                    return 1 # success
+            else:
+                return self.agent_states[self.primary_agent]['deadline']
+        else:
+            return None
+
 
 class Agent(object):
     """Base class for all agents."""
