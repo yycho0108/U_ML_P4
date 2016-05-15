@@ -48,7 +48,6 @@ class Simulator(object):
 
     def run(self, n_trials=1):
         self.quit = False
-        fscore = open('score.csv','w+')
         for trial in xrange(n_trials):
             print "Simulator.run(): Trial {}".format(trial)  # [debug]
             self.env.reset()
@@ -68,6 +67,9 @@ class Simulator(object):
                                 self.quit = True
                             elif event.unicode == u' ':
                                 self.paused = True
+                            elif event.key == pygame.K_v:
+                                #Logging - toggle 'verbose'
+                                self.env.primary_agent.verbose = not self.env.primary_agent.verbose
 
                     if self.paused:
                         self.pause()
@@ -84,8 +86,6 @@ class Simulator(object):
                     self.quit = True
                 finally:
                     if self.quit or self.env.done:
-                        fscore.write(str(self.env.score()))
-                        fscore.write('\n')
                         break
 
             if self.quit:

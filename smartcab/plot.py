@@ -33,6 +33,14 @@ def plotcsv(name):
 
         plt.plot(data_av,'o')
 
+        deg = 1
+        fit = np.polyfit(time,data_av,deg=deg)
+        fit_line = np.zeros(time.shape)
+        for i in range(deg+1):
+            fit_line += fit[i] * time**(deg - i)
+
+        plt.plot(time,fit_line,color='red')
+
         plt.title(name + ': over {} iterations'.format(len(data)))
         plt.show()
 

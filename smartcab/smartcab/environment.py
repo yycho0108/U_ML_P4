@@ -1,8 +1,10 @@
 import time
 import random
+
 from collections import OrderedDict
 
 from simulator import Simulator
+
 
 class TrafficLight(object):
     """A traffic light that switches periodically."""
@@ -22,7 +24,6 @@ class TrafficLight(object):
             self.state = not self.state  # assuming state is boolean
             self.last_updated = t
 
-
 class Environment(object):
     """Environment within which all agents operate."""
 
@@ -30,11 +31,12 @@ class Environment(object):
     valid_inputs = {'light': TrafficLight.valid_states, 'oncoming': valid_actions, 'left': valid_actions, 'right': valid_actions}
     valid_headings = [(1, 0), (0, -1), (-1, 0), (0, 1)]  # ENWS
 
-    def __init__(self):
+    def __init__(self, params):
         self.done = False
         self.t = 0
         self.agent_states = OrderedDict()
         self.status_text = ""
+        self.params = params
 
         # Road network
         self.grid_size = (8, 6)  # (cols, rows)
@@ -61,6 +63,9 @@ class Environment(object):
         # Primary agent
         self.primary_agent = None  # to be set explicitly
         self.enforce_deadline = False
+
+        # Logging
+        self.fscore = open('score.csv','w+')
 
     def create_agent(self, agent_class, *args, **kwargs):
         agent = agent_class(self, *args, **kwargs)
@@ -101,6 +106,9 @@ class Environment(object):
                 'deadline': deadline if agent is self.primary_agent else None}
             agent.reset(destination=(destination if agent is self.primary_agent else None))
 
+        # Logging
+        self.fscore.flush()
+
     def step(self):
         #print "Environment.step(): t = {}".format(self.t)  # [debug]
 
@@ -118,6 +126,13 @@ class Environment(object):
                 self.done = True
                 print "Environment.reset(): Primary agent could not reach destination within deadline!"
             self.agent_states[self.primary_agent]['deadline'] -= 1
+
+        if self.done is True:
+            self.fscore.write(str(self.score()))
+            self.fscore.write('\n')
+
+
+
 
     def sense(self, agent):
         assert agent in self.agent_states, "Unknown agent!"
@@ -180,17 +195,20 @@ class Environment(object):
                 #if self.bounds[0] <= location[0] <= self.bounds[2] and self.bounds[1] <= location[1] <= self.bounds[3]:  # bounded
                 state['location'] = location
                 state['heading'] = heading
-                reward = 2 if action == agent.get_next_waypoint() else 0.5
+                reward = params['reward_correct'] if action == agent.get_next_waypoint() else params['reward_legal']
             else:
-                reward = -1
+                reward = params['reward_illegal']
         else:
-            #changed reward for better learning
-            reward = 0
+            #change reward here for better learning
+            #assigning negative reward since delay incurs cost
+            reward = params['reward_none']
 
         if agent is self.primary_agent:
             if state['location'] == state['destination']:
                 if state['deadline'] >= 0:
-                    reward += 10  # bonus
+                    #disable bonus for stable loss function!
+                    reward += params['reward_bonus']  # bonus
+                    #pass
                 self.done = True
                 print "Environment.act(): Primary agent has reached destination!"  # [debug]
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
@@ -204,16 +222,13 @@ class Environment(object):
 
     def score(self):
         """ custom function to evaluate agent's success """
-        if self.done:
-            if self.enforce_deadline:
-                if self.agent_states[self.primary_agent]['deadline'] <= 0:
-                    return -1 #fail
-                else:
-                    return 1 # success
+        if self.enforce_deadline:
+            if self.agent_states[self.primary_agent]['deadline'] <= 0:
+                return -1 #fail
             else:
-                return self.agent_states[self.primary_agent]['deadline']
+                return 1 # success
         else:
-            return None
+            return self.agent_states[self.primary_agent]['deadline']
 
 
 class Agent(object):
