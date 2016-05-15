@@ -184,7 +184,8 @@ class Environment(object):
             else:
                 reward = -1
         else:
-            reward = 1
+            #changed reward for better learning
+            reward = 0
 
         if agent is self.primary_agent:
             if state['location'] == state['destination']:

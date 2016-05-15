@@ -34,7 +34,6 @@ def plotcsv(name):
         plt.plot(data_av,'o')
 
         plt.title(name + ': over {} iterations'.format(len(data)))
-        plt.ylim(ymin=-2,ymax=2)
         plt.show()
 
         if name == 'test':
@@ -46,3 +45,4 @@ def plotcsv(name):
             plt.show()
 
 plotcsv('score')
+plotcsv('loss')
