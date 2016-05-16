@@ -9,11 +9,14 @@ from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
 from collections import defaultdict
-from params import params, valid_params
+from params import params, search_params
+from matplotlib import pyplot as plt
+import numpy as np 
 
 class Entry:
     def __init__(self,state):
         self.state = tuple(state.values())
+        self.state_verbose = state
     def __hash__(self):
         return hash(self.state)
     def __eq__(self,other):
@@ -23,7 +26,7 @@ class Entry:
     def __repr__(self):
         return repr(self.state)
     def __str__(self):
-        return repr(self)
+        return repr(self.state_verbose)
 
 class LearningAgent(Agent):
     """An agent that learns to drive in the smartcab world."""
@@ -37,7 +40,7 @@ class LearningAgent(Agent):
         # TODO: Initialize any additional variables here
 
         # PARAMS
-        self.qtable = defaultdict(lambda:[0.0, 0.0, 0.0, 0.0]) 
+        self.qtable = defaultdict(lambda:[10.0, 10.0, 10.0, 10.0]) 
         # == lambda : [0 for _ in self.valid_actions]
 
         #epsilon for e-greedy
@@ -56,6 +59,7 @@ class LearningAgent(Agent):
         self.gamma = self.params['gamma'] #temporal discount
         self.valid_actions = self.env.valid_actions
 
+
         self.epoch = 0
         self.max_epoch = params['max_epoch']
         
@@ -63,17 +67,22 @@ class LearningAgent(Agent):
         self.state = None
         self.prev = None
 
+        # EVALUATION (overall)
+        self.net_reward = 0
+
         # Logging
         self.verbose = False
-        self.floss = open('loss.csv','w+')
+        #self.floss = open('loss.csv','w+')
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
         self.state = None
         self.prev = None
+        self.net_reward = 0
+
         self.epoch = self.epoch + 1
-        self.floss.flush()
+        #self.floss.flush()
 
 
     def update(self, t):
@@ -82,6 +91,7 @@ class LearningAgent(Agent):
         # Gather inputs
 
         deadline = self.env.get_deadline(self)
+        self.deadline = deadline
 
         if self.state is None:
             self.state = self.env.sense(self)
@@ -99,6 +109,8 @@ class LearningAgent(Agent):
         self.prev = self.state
         # Execute action and get reward
         reward = self.env.act(self, self.valid_actions[action])
+        self.net_reward += reward
+
 
         # observe new state
         self.state = self.env.sense(self)
@@ -120,7 +132,7 @@ class LearningAgent(Agent):
             print 'q_old', self.qtable[entry][action]
             print 'q_new', q_new
 
-        self.floss.write(str(0.5 * (q_new - q_old)**2) + '\n')
+        #self.floss.write(str(0.5 * (q_new - q_old)**2) + '\n')
         self.qtable[entry][action] = (1.0 - self.alpha()) * q_old + self.alpha() * q_new
 
         #print "LearningAgent.update(): deadline = {}, state = {}, action = {}, reward = {}".format(deadline, self.state, action, reward)  # [debug]
@@ -154,7 +166,11 @@ class LearningAgent(Agent):
             return self.getBest()
 
     def maxQ(self,state):
-        return max(self.qtable[Entry(state)])
+        if self.deadline <= 0:
+            #terminal
+            return 0
+        else:
+            return max(self.qtable[Entry(state)])
 
     def eps(self):
         if self.params['eps_anneal'] == 'tanh': #curvy anneal
@@ -182,9 +198,9 @@ class LearningAgent(Agent):
             #uses alpha_start
             return self.alpha_cur
 
-        
-
-
+    def print_policy(self):
+        for state,vals in self.qtable.iteritems():
+            print 'state : {}, action : {}'.format(str(state),self.valid_actions[np.argmax(vals)])
 
 def run(params):
     """Run the agent for a finite number of trials."""
@@ -195,24 +211,78 @@ def run(params):
 
     # Now simulate it
     sim = Simulator(e, update_delay=0.0,silent=False)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
-    return params, sim.score()
+      # press Esc or close pygame window to quit
+    return params, sim.run(n_trials=params['max_epoch'])
 
 def run_silent(params):
     """Run the agent for a finite number of trials."""
-    #print 'run_silent({})'.format(params)
-    # Set up environment and agent
-    e = Environment(params)  # create environment (also adds some dummy traffic)
-    a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+    print 'run_silent({})'.format(params)
+        #...run it 10 times to verify... (just for now)
+    repeat = 10 
+    score = 0.0
+    #scores = []
+    for _ in range(repeat):
+        # Set up environment and agent
+        e = Environment(params)  # create environment (also adds some dummy traffic)
+        a = e.create_agent(LearningAgent)  # create agent
+        e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
-    # Now simulate it
-    sim = Simulator(e, update_delay=0.0,silent=True)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
-    return params, sim.run(n_trials=params['max_epoch'])
+        # Now simulate it
+        sim = Simulator(e, update_delay=0.0,silent=True)  # reduce update_delay to speed up simulation
+        
 
-def gridSearch(valid_params):
-    grid = ParameterGrid(valid_params)
+        score += sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
+        #scores += [sim.getScores()]
+    #a.print_policy() #[debug]
+
+    #min_scores = np.min(scores,0)
+    #max_scores = np.max(scores,0)
+
+    #scores = np.average(scores,0)
+
+    #plt.plot(scores)
+    #plt.plot(min_scores)
+    #plt.plot(max_scores)
+    #plt.legend(['avg','min','max'])
+    #plt.show()
+
+    score /= float(repeat)
+
+    return params, score
+
+def run_silent_save(params):
+    """Run the agent for a finite number of trials."""
+    print 'run_silent({})'.format(params)
+        #...run it 10 times to verify... (just for now)
+    repeat = 10
+    score = 0.0
+    scores = []
+    fscores = open('score.csv','w+')
+    for _ in range(repeat):
+        # Set up environment and agent
+        e = Environment(params)  # create environment (also adds some dummy traffic)
+        a = e.create_agent(LearningAgent)  # create agent
+        e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
+
+        # Now simulate it
+        sim = Simulator(e, update_delay=0.0,silent=True)  # reduce update_delay to speed up simulation
+        
+        score += sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
+        scores += [sim.getScores()]
+    #a.print_policy() #[debug]
+
+    scores = np.average(scores,0)
+    for s in scores:
+        fscores.write(str(s) + '\n')
+    fscores.flush()
+    fscores.close()
+
+    score /= float(repeat)
+
+    return params, score
+
+def gridSearch(search_params):
+    grid = ParameterGrid(search_params)
     best_params = None
     best_score = -99999
 
@@ -238,15 +308,15 @@ def gridSearch(valid_params):
     print 'best params', best_params
     print 'best score', best_score
 
-def gridSearch_2(valid_params):
-    pool = Pool(processes=4)              # start 4 worker processes
-    grid = ParameterGrid(valid_params)
+def gridSearch_2(search_params):
+    pool = Pool(processes=4)              # start 4 {=cpu_count()} worker processes
+    grid = ParameterGrid(search_params)
     res = pool.map(run_silent, grid)
     
     maxParam = None
     maxScore = -99999.0
 
-    print res
+    #print res
     for param,score in res:
         if score > maxScore:
             maxScore = score
@@ -256,6 +326,7 @@ def gridSearch_2(valid_params):
     print 'max Param', maxParam
 
 if __name__ == '__main__':
-    print run_silent(params) #-- run once 
-    #gridSearch(valid_params)
-    #gridSearch_2(valid_params)
+    run(params)
+    #print run_silent_save(params) #-- run once 
+    #gridSearch(search_params)
+    #gridSearch_2(search_params)

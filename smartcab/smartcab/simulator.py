@@ -102,7 +102,7 @@ class Simulator(object):
                     if self.quit or self.env.done:
                         score = self.env.score()
                         scores += [score]
-                        fscores.write(str(score) + '\n')
+                        fscore.write(str(score) + '\n')
                         break
 
             if self.quit:
@@ -111,21 +111,22 @@ class Simulator(object):
 
     def run_silent(self,n_trials=1):
         """ training an agent for n_trials """
-        scores = []
+        self.scores = []
         for trial in xrange(n_trials):
             self.env.reset()
             while not self.env.done:
                 self.env.step()
-            scores += [self.env.score()]
-        self.score = np.average(scores)
+            self.scores += [self.env.score()]
+        self.score = np.average(self.scores)
         return self.score
 
-    #def score(self):
-    #    #return self.score
-    #    with open('score.csv') as f:
-    #        reader = csv.reader(f)
-    #        data = np.asarray(list(reader),dtype=np.float32)
-    #        return np.average(data)
+    def getScores(self):
+        return self.scores
+        #return self.score
+        #with open('score.csv') as f:
+        #    reader = csv.reader(f)
+        #    data = np.asarray(list(reader),dtype=np.float32)
+        #    return np.average(data)
         
 
     def render(self):

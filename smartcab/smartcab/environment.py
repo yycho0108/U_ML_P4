@@ -118,7 +118,7 @@ class Environment(object):
         if self.primary_agent is not None:
             if self.enforce_deadline and self.agent_states[self.primary_agent]['deadline'] <= 0:
                 self.done = True
-                #print "Environment.reset(): Primary agent could not reach destination within deadline!"
+                print "Environment.reset(): Primary agent could not reach destination within deadline!"
             self.agent_states[self.primary_agent]['deadline'] -= 1
 
 
@@ -201,7 +201,7 @@ class Environment(object):
                     reward += params['reward_bonus']  # bonus
                     #pass
                 self.done = True
-                #print "Environment.act(): Primary agent has reached destination!"  # [debug]
+                print "Environment.act(): Primary agent has reached destination!"  # [debug]
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
             #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
 
@@ -217,7 +217,8 @@ class Environment(object):
             if self.agent_states[self.primary_agent]['deadline'] <= 0:
                 return -1 #fail
             else:
-                return 1 # success
+                return self.primary_agent.net_reward
+                #return 1 # success
         else:
             return self.agent_states[self.primary_agent]['deadline']
 

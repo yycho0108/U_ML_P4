@@ -53,4 +53,4 @@ def plotcsv(name):
             plt.show()
 
 plotcsv('score')
-plotcsv('loss')
+#plotcsv('loss')

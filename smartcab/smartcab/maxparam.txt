@@ -1,2 +1,0 @@
-max Score -0.692308
-max Param {'gamma': 0.99, 'eps_end': 0.1, 'eps_decay': 0.99, 'reward_illegal': -1.0, 'max_epoch': 100, 'alpha_start': 0.9, 'alpha_end': 0.05, 'reward_correct': 5.0, 'eps_anneal': 'linear', 'reward_legal': 1.0, 'alpha_decay': 0.99, 'alpha_anneal': 'tanh', 'reward_bonus': 10.0, 'eps_start': 1.0, 'reward_none': 1.0}
