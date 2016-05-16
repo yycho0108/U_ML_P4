@@ -1,14 +1,14 @@
 params = {
     'max_epoch' : 100,
-    'eps_start' : 1.0,
+    'eps_start' : 0.1,
     'eps_end' : 0.05,
     'eps_decay' : 0.995,
     'eps_anneal' : 'linear',
-    'alpha_start' : 0.2,
+    'alpha_start' : 0.9,
     'alpha_end' : 0.05,
     'alpha_decay' : 0.99,
-    'alpha_anneal' : 'tanh',
-    'gamma' : 0.8,
+    'alpha_anneal' : None,
+    'gamma' : 0.3,
     'reward_none' : 1.0,
     'reward_bonus' : 10.0,
     'reward_correct' : 2.,
@@ -71,19 +71,36 @@ params = {
 #    'reward_legal' : (0.5,),
 #    'reward_illegal' : (-1.0,)
 #}
-
-#grid-search #4
+#grid-search #4 - searching for alpha
+#search_params= {
+#    'max_epoch' : (100,), #don't want it longer
+#    'eps_start' : (1.0,),
+#    'eps_end' : (0.05,),
+#    'eps_decay' : (0.99,),
+#    'eps_anneal' : ('linear'),
+#    'alpha_start' : (0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),
+#    'alpha_end' : (0.05,),
+#    'alpha_decay' : (0.99,),
+#    'alpha_anneal' : ('tanh'),
+#    'gamma' : (0.8,),
+#    'reward_none' : (1.0,),
+#    'reward_bonus' : (10.0,),
+#    'reward_correct' : (2.0,),
+#    'reward_legal' : (0.5,),
+#    'reward_illegal' : (-1.0,)
+#}
+#grid-search #4 - searching for alpha-gamma combination
 search_params= {
     'max_epoch' : (100,), #don't want it longer
-    'eps_start' : (1.0,),
+    'eps_start' : (0.1,0.3,0.5,0.7,0.9),
     'eps_end' : (0.05,),
-    'eps_decay' : (0.99,), #cutting variation
-    'eps_anneal' : ('linear',), #cutting tanh, decay
-    'alpha_start' : (0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),
-    'alpha_end' : (0.05,), #cutting variation
-    'alpha_decay' : (0.99,), #cutting variation
-    'alpha_anneal' : ('tanh',), #cutting linear, decay
-    'gamma' : (0.95,), #cutting variation
+    'eps_decay' : (0.99,),
+    'eps_anneal' : ('linear',None),
+    'alpha_start' : (0.1,0.3,0.5,0.7,0.9),
+    'alpha_end' : (0.05,),
+    'alpha_decay' : (0.99,),
+    'alpha_anneal' : ('tanh',None),
+    'gamma' : (0.1,0.3,0.5,0.7,0.9),
     'reward_none' : (1.0,),
     'reward_bonus' : (10.0,),
     'reward_correct' : (2.0,),

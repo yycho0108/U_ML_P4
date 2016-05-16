@@ -287,6 +287,7 @@ def gridSearch(search_params):
     best_score = -99999
 
     total = len(grid)
+    print 'searching {} combinations'.format(total)
     start = time.time()
     last = time.time()
 
@@ -311,6 +312,7 @@ def gridSearch(search_params):
 def gridSearch_2(search_params):
     pool = Pool(processes=4)              # start 4 {=cpu_count()} worker processes
     grid = ParameterGrid(search_params)
+    print 'searching {} combinations'.format(len(grid))
     res = pool.map(run_silent, grid)
     
     maxParam = None

@@ -217,8 +217,8 @@ class Environment(object):
             if self.agent_states[self.primary_agent]['deadline'] <= 0:
                 return -1 #fail
             else:
-                return self.primary_agent.net_reward
                 #return 1 # success
+                return self.primary_agent.net_reward
         else:
             return self.agent_states[self.primary_agent]['deadline']
 
