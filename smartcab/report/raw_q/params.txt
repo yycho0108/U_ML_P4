@@ -9,7 +9,7 @@ params = {
     'alpha_end' : 0.1,
     'alpha_decay' : 0.99,
     'alpha_anneal' : 'linear',
-    'gamma' : 0.99,
+    'gamma' : 0.8,
     'reward_none' : 1.0,
     'reward_bonus' : 10.0,
     'reward_correct' : 2.,

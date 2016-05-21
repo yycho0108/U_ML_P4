@@ -92,7 +92,8 @@ class Environment(object):
 
         start_heading = random.choice(self.valid_headings)
         deadline = self.compute_dist(start, destination) * 5
-        #print "Environment.reset(): Trial set up with start = {}, destination = {}, deadline = {}".format(start, destination, deadline)
+        if not self.params['silent']:
+            print "Environment.reset(): Trial set up with start = {}, destination = {}, deadline = {}".format(start, destination, deadline)
 
         # Initialize agent(s)
         for agent in self.agent_states.iterkeys():
@@ -118,7 +119,8 @@ class Environment(object):
         if self.primary_agent is not None:
             if self.enforce_deadline and self.agent_states[self.primary_agent]['deadline'] <= 0:
                 self.done = True
-                print "Environment.reset(): Primary agent could not reach destination within deadline!"
+                if not self.params['silent']:
+                    print "Environment.reset(): Primary agent could not reach destination within deadline!"
             self.agent_states[self.primary_agent]['deadline'] -= 1
 
 
@@ -197,11 +199,10 @@ class Environment(object):
         if agent is self.primary_agent:
             if state['location'] == state['destination']:
                 if state['deadline'] >= 0:
-                    #disable bonus for stable loss function!
                     reward += params['reward_bonus']  # bonus
-                    #pass
                 self.done = True
-                print "Environment.act(): Primary agent has reached destination!"  # [debug]
+                if not self.params['silent']:
+                    print "Environment.act(): Primary agent has reached destination!"  # [debug]
             self.status_text = "state: {}\naction: {}\nreward: {}".format(agent.get_state(), action, reward)
             #print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)  # [debug]
 
@@ -215,12 +216,18 @@ class Environment(object):
         """ custom function to evaluate agent's success """
         if self.enforce_deadline:
             if self.agent_states[self.primary_agent]['deadline'] <= 0:
-                return -1 #fail
+                return -1. #fail
             else:
-                #return 1 # success
-                return self.primary_agent.net_reward
+                return 1. # success
+                #return self.primary_agent.net_reward
         else:
             return self.agent_states[self.primary_agent]['deadline']
+
+    def penalty(self):
+        return self.primary_agent.net_penalty
+
+    def losses(self):
+        return self.primary_agent.losses
 
 
 class Agent(object):

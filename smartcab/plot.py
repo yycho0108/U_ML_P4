@@ -42,6 +42,7 @@ def plotcsv(name):
         plt.plot(time,fit_line,color='red')
 
         plt.title(name + ': over {} iterations'.format(len(data)))
+        plt.savefig(name + '.eps', bbox_inches='tight')
         plt.show()
 
         if name == 'test':
@@ -53,4 +54,5 @@ def plotcsv(name):
             plt.show()
 
 plotcsv('score')
-#plotcsv('loss')
+plotcsv('penalties')
+plotcsv('losses')

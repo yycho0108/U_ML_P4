@@ -67,23 +67,25 @@ class LearningAgent(Agent):
         self.state = None
         self.prev = None
 
-        # EVALUATION (overall)
-        self.net_reward = 0
+        # EVALUATION (reward,penalty,loss over time)
+        self.net_reward = 0.
+        self.net_penalty = 0.
+        self.losses = []
 
         # Logging
         self.verbose = False
-        #self.floss = open('loss.csv','w+')
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
         self.state = None
         self.prev = None
-        self.net_reward = 0
+
+        self.net_reward = 0.
+        self.net_penalty = 0.
+        #self.losses = []
 
         self.epoch = self.epoch + 1
-        #self.floss.flush()
-
 
     def update(self, t):
         if self.verbose:
@@ -109,7 +111,11 @@ class LearningAgent(Agent):
         self.prev = self.state
         # Execute action and get reward
         reward = self.env.act(self, self.valid_actions[action])
-        self.net_reward += reward
+
+        if reward < 0:
+            self.net_penalty += reward # -- counting only penalties
+
+        self.net_reward += reward # -- counting all
 
 
         # observe new state
@@ -132,7 +138,7 @@ class LearningAgent(Agent):
             print 'q_old', self.qtable[entry][action]
             print 'q_new', q_new
 
-        #self.floss.write(str(0.5 * (q_new - q_old)**2) + '\n')
+        self.losses += [0.5 * (q_new - q_old)**2]
         self.qtable[entry][action] = (1.0 - self.alpha()) * q_old + self.alpha() * q_new
 
         #print "LearningAgent.update(): deadline = {}, state = {}, action = {}, reward = {}".format(deadline, self.state, action, reward)  # [debug]
@@ -217,10 +223,12 @@ def run(params):
 def run_silent(params):
     """Run the agent for a finite number of trials."""
     print 'run_silent({})'.format(params)
-        #...run it 10 times to verify... (just for now)
-    repeat = 10 
+
+    #...run it 10 times to verify...
+
+    repeat = 10
     score = 0.0
-    #scores = []
+
     for _ in range(repeat):
         # Set up environment and agent
         e = Environment(params)  # create environment (also adds some dummy traffic)
@@ -229,35 +237,22 @@ def run_silent(params):
 
         # Now simulate it
         sim = Simulator(e, update_delay=0.0,silent=True)  # reduce update_delay to speed up simulation
-        
-
         score += sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
-        #scores += [sim.getScores()]
-    #a.print_policy() #[debug]
 
-    #min_scores = np.min(scores,0)
-    #max_scores = np.max(scores,0)
-
-    #scores = np.average(scores,0)
-
-    #plt.plot(scores)
-    #plt.plot(min_scores)
-    #plt.plot(max_scores)
-    #plt.legend(['avg','min','max'])
-    #plt.show()
-
-    score /= float(repeat)
+    score /= repeat
 
     return params, score
 
 def run_silent_save(params):
     """Run the agent for a finite number of trials."""
     print 'run_silent({})'.format(params)
-        #...run it 10 times to verify... (just for now)
-    repeat = 10
+    #...run it 10 times to verify... (just for now)
+
+    repeat = 100
     score = 0.0
     scores = []
-    fscores = open('score.csv','w+')
+    penalties = []
+
     for _ in range(repeat):
         # Set up environment and agent
         e = Environment(params)  # create environment (also adds some dummy traffic)
@@ -269,16 +264,36 @@ def run_silent_save(params):
         
         score += sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
         scores += [sim.getScores()]
+        penalties += [sim.getPenalties()]
+
+    losses = sim.getLosses() #cannot average over repeated runs
+
     #a.print_policy() #[debug]
 
     scores = np.average(scores,0)
-    for s in scores:
-        fscores.write(str(s) + '\n')
-    fscores.flush()
-    fscores.close()
+    penalties = np.average(penalties,0)
+
+    if params['save']:
+        fscores = open('score.csv','w+')
+        fpenalties = open('penalties.csv','w+')
+        flosses = open('losses.csv','w+')
+
+        for s in scores:
+            fscores.write(str(s) + '\n')
+        fscores.flush()
+        fscores.close()
+
+        for p in penalties:
+            fpenalties.write(str(p) + '\n')
+        fpenalties.flush()
+        fpenalties.close()
+
+        for l in losses:
+            flosses.write(str(l) + '\n')
+        flosses.flush()
+        flosses.close()
 
     score /= float(repeat)
-
     return params, score
 
 def gridSearch(search_params):
@@ -295,7 +310,9 @@ def gridSearch(search_params):
         print '{}/{}'.format(index,total)
         try:
             #score = run(params)
-            score = run_silent(params)
+            params, score = run_silent(params)
+            print 'Score : {}'.format(score)
+            print 'Running best : {}'.format(best_score)
             if score > best_score:
                 best_params = params
                 best_score = score
@@ -320,6 +337,7 @@ def gridSearch_2(search_params):
 
     #print res
     for param,score in res:
+        print param,score
         if score > maxScore:
             maxScore = score
             maxParam = param
@@ -328,7 +346,8 @@ def gridSearch_2(search_params):
     print 'max Param', maxParam
 
 if __name__ == '__main__':
-    run(params)
-    #print run_silent_save(params) #-- run once 
+    #run(params)
+    print run_silent_save(params) #-- run once 
     #gridSearch(search_params)
     #gridSearch_2(search_params)
+

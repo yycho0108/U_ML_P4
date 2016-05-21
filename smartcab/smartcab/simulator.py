@@ -112,12 +112,20 @@ class Simulator(object):
     def run_silent(self,n_trials=1):
         """ training an agent for n_trials """
         self.scores = []
+        self.penalties = []
         for trial in xrange(n_trials):
             self.env.reset()
             while not self.env.done:
                 self.env.step()
             self.scores += [self.env.score()]
+            self.penalties += [self.env.penalty()]
+
+        self.losses = self.env.losses()
+
         self.score = np.average(self.scores)
+        self.penalty = np.average(self.penalties)
+        self.loss = np.average(self.losses)
+
         return self.score
 
     def getScores(self):
@@ -127,6 +135,12 @@ class Simulator(object):
         #    reader = csv.reader(f)
         #    data = np.asarray(list(reader),dtype=np.float32)
         #    return np.average(data)
+
+    def getPenalties(self):
+        return self.penalties
+
+    def getLosses(self):
+        return self.losses
         
 
     def render(self):
