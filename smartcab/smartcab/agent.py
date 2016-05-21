@@ -347,8 +347,8 @@ def gridSearch_2(search_params):
     print 'max Param', maxParam
 
 if __name__ == '__main__':
-    #run(params)
-    print run_silent_save(params) #-- run once 
+    run(params)
+    #print run_silent_save(params) #-- run once 
     #gridSearch(search_params)
     #gridSearch_2(search_params)
 
