@@ -63,6 +63,7 @@ class Simulator(object):
         scores = []
         fscore = open('scores.csv','w+')
         for trial in xrange(n_trials):
+            print trial
             #print "Simulator.run(): Trial {}".format(trial)  # [debug]
             self.env.reset()
             self.current_time = 0.0
@@ -84,6 +85,8 @@ class Simulator(object):
                             elif event.key == pygame.K_v:
                                 #Logging - toggle 'verbose'
                                 self.env.primary_agent.verbose = not self.env.primary_agent.verbose
+                            elif event.key == pygame.K_d:
+                                self.update_delay = 0.1
 
                     if self.paused:
                         self.pause()

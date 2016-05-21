@@ -1,6 +1,6 @@
 repeat = 10
 params = {
-    'max_epoch' : 100,
+    'max_epoch' : 1000,
     'eps_start' : 1.0,
     'eps_end' : 0.05,
     'eps_decay' : 0.995,

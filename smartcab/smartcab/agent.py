@@ -226,7 +226,7 @@ def run_silent(params):
 
     #...run it 10 times to verify...
 
-    repeat = 10
+    repeat = 100
     score = 0.0
 
     for _ in range(repeat):
@@ -248,7 +248,7 @@ def run_silent_save(params):
     print 'run_silent({})'.format(params)
     #...run it 10 times to verify... (just for now)
 
-    repeat = 100
+    repeat = 1
     score = 0.0
     scores = []
     penalties = []
@@ -265,6 +265,7 @@ def run_silent_save(params):
         score += sim.run(n_trials=params['max_epoch'])  # press Esc or close pygame window to quit
         scores += [sim.getScores()]
         penalties += [sim.getPenalties()]
+    print 'state span size : {}'.format(len(a.qtable))
 
     losses = sim.getLosses() #cannot average over repeated runs
 
