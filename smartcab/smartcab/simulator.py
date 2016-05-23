@@ -37,6 +37,7 @@ class Simulator(object):
         self.update_delay = update_delay
 
         self.silent = silent
+        self.fast = True
 
         if not self.silent:
             pygame.init()
@@ -86,7 +87,12 @@ class Simulator(object):
                                 #Logging - toggle 'verbose'
                                 self.env.primary_agent.verbose = not self.env.primary_agent.verbose
                             elif event.key == pygame.K_d:
-                                self.update_delay = 0.1
+                                if self.fast:
+                                    self.fast = False
+                                    self.update_delay = 0.4
+                                else:
+                                    self.fast = True
+                                    self.update_delay = 0.0
 
                     if self.paused:
                         self.pause()

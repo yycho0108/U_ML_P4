@@ -1,7 +1,7 @@
 
 params = {
     'save': True,
-    'silent': True,
+    'silent': False,
     'max_epoch': 100,
     'eps_start': 0.3,
     'eps_end': 0.05,
