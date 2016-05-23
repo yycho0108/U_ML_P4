@@ -1,25 +1,23 @@
 
 params = {
-    'save': False,
+    'save': True,
     'silent': True,
     'max_epoch': 100,
-    'eps_start': 0.25,
+    'eps_start': 0.3,
     'eps_end': 0.05,
     'eps_decay': 0.99,
     'eps_anneal': 'linear',
-    'alpha_start': 0.35,
+    'alpha_start': 0.3,
     'alpha_end': 0.05,
     'alpha_decay': 0.99,
     'alpha_anneal': 'linear',
-    'gamma': 0.05,
+    'gamma': 0.1,
     'reward_none': 1.0,
     'reward_bonus': 10.0,
     'reward_correct': 2.0,
     'reward_legal': 0.5,
     'reward_illegal': -1.0,
 }
-
-
 
 #grid-search #1
 #search_params = {

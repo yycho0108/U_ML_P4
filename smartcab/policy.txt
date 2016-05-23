@@ -1,0 +1,97 @@
+run_silent({'gamma': 0.1, 'eps_end': 0.05, 'eps_decay': 0.99, 'silent': True, 'reward_illegal': -1.0, 'max_epoch': 100, 'alpha_start': 0.3, 'alpha_end': 0.05, 'reward_correct': 2.0, 'eps_anneal': 'linear', 'reward_legal': 0.5, 'alpha_decay': 0.99, 'alpha_anneal': 'linear', 'reward_bonus': 10.0, 'save': True, 'eps_start': 0.3, 'reward_none': 1.0})
+state span size : 47
+state : {'light': 'red', 'oncoming': None, 'right': 'right', 'waypoint': 'right', 'left': None};
+ action : None, reward : 1.0, confidence : 30.79%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'right', 'left': 'left'};
+ action : forward, reward : -1.0, confidence : 31.625%
+state : {'light': 'green', 'oncoming': 'forward', 'right': None, 'waypoint': 'right', 'left': None};
+ action : forward, reward : 0.5, confidence : 32.099%
+state : {'light': 'green', 'oncoming': None, 'right': 'left', 'waypoint': None, 'left': None};
+ action : None, reward : 1.0, confidence : 25.0%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': None, 'left': 'left'};
+ action : None, reward : 1.0, confidence : 25.0%
+state : {'light': 'green', 'oncoming': 'left', 'right': None, 'waypoint': 'left', 'left': None};
+ action : forward, reward : 0.5, confidence : 45.317%
+state : {'light': 'green', 'oncoming': None, 'right': 'forward', 'waypoint': 'forward', 'left': None};
+ action : None, reward : 1.0, confidence : 37.249%
+state : {'light': 'red', 'oncoming': 'forward', 'right': None, 'waypoint': 'right', 'left': None};
+ action : None, reward : 1.0, confidence : 29.382%
+state : {'light': 'red', 'oncoming': 'left', 'right': None, 'waypoint': 'left', 'left': None};
+ action : left, reward : -1.0, confidence : 45.343%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'right', 'left': None};
+ action : right, reward : 2.0, confidence : 71.947%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': None, 'left': 'forward'};
+ action : None, reward : 1.0, confidence : 25.0%
+state : {'light': 'red', 'oncoming': None, 'right': 'left', 'waypoint': 'forward', 'left': None};
+ action : forward, reward : -1.0, confidence : 32.059%
+state : {'light': 'green', 'oncoming': None, 'right': 'forward', 'waypoint': 'right', 'left': None};
+ action : right, reward : 2.0, confidence : 66.191%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': None, 'left': None};
+ action : None, reward : 1.0, confidence : 25.0%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'forward', 'left': 'left'};
+ action : right, reward : 0.5, confidence : 66.592%
+state : {'light': 'red', 'oncoming': None, 'right': 'right', 'waypoint': 'left', 'left': None};
+ action : forward, reward : -1.0, confidence : 31.181%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'forward', 'left': 'left'};
+ action : right, reward : 0.5, confidence : 71.908%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'right', 'left': 'left'};
+ action : right, reward : 2.0, confidence : 77.412%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'forward', 'left': None};
+ action : None, reward : 1.0, confidence : 45.727%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'right', 'left': None};
+ action : right, reward : 2.0, confidence : 89.704%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'left', 'left': 'forward'};
+ action : right, reward : 0.5, confidence : 71.524%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'forward', 'left': 'right'};
+ action : forward, reward : -1.0, confidence : 27.788%
+state : {'light': 'red', 'oncoming': 'forward', 'right': None, 'waypoint': 'forward', 'left': None};
+ action : forward, reward : -1.0, confidence : 32.633%
+state : {'light': 'green', 'oncoming': 'left', 'right': None, 'waypoint': 'forward', 'left': None};
+ action : left, reward : 0.5, confidence : 41.789%
+state : {'light': 'green', 'oncoming': None, 'right': 'left', 'waypoint': 'left', 'left': None};
+ action : right, reward : 0.5, confidence : 48.09%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': None, 'left': 'left'};
+ action : None, reward : 1.0, confidence : 25.0%
+state : {'light': 'red', 'oncoming': None, 'right': 'right', 'waypoint': 'forward', 'left': None};
+ action : right, reward : 0.5, confidence : 29.612%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'left', 'left': 'right'};
+ action : left, reward : -1.0, confidence : 43.632%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': None, 'left': None};
+ action : None, reward : 1.0, confidence : 25.0%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'left', 'left': None};
+ action : None, reward : 1.0, confidence : 44.297%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'left', 'left': 'left'};
+ action : right, reward : 0.5, confidence : 67.603%
+state : {'light': 'green', 'oncoming': None, 'right': 'left', 'waypoint': 'forward', 'left': None};
+ action : left, reward : 0.5, confidence : 27.913%
+state : {'light': 'red', 'oncoming': 'left', 'right': None, 'waypoint': 'right', 'left': None};
+ action : forward, reward : -1.0, confidence : 36.129%
+state : {'light': 'red', 'oncoming': 'forward', 'right': None, 'waypoint': None, 'left': None};
+ action : None, reward : 1.0, confidence : 25.0%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'right', 'left': 'forward'};
+ action : left, reward : 0.5, confidence : 45.321%
+state : {'light': 'green', 'oncoming': None, 'right': 'left', 'waypoint': 'right', 'left': None};
+ action : right, reward : 2.0, confidence : 59.054%
+state : {'light': 'red', 'oncoming': 'right', 'right': None, 'waypoint': 'forward', 'left': None};
+ action : left, reward : -1.0, confidence : 33.097%
+state : {'light': 'red', 'oncoming': 'forward', 'right': None, 'waypoint': 'left', 'left': None};
+ action : forward, reward : -1.0, confidence : 31.982%
+state : {'light': 'green', 'oncoming': None, 'right': 'right', 'waypoint': 'left', 'left': None};
+ action : forward, reward : 0.5, confidence : 32.273%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'forward', 'left': None};
+ action : forward, reward : 2.0, confidence : 74.85%
+state : {'light': 'red', 'oncoming': None, 'right': None, 'waypoint': 'forward', 'left': 'forward'};
+ action : forward, reward : -1.0, confidence : 33.362%
+state : {'light': 'green', 'oncoming': None, 'right': 'forward', 'waypoint': 'left', 'left': None};
+ action : left, reward : 2.0, confidence : 40.26%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'left', 'left': None};
+ action : left, reward : 2.0, confidence : 83.8%
+state : {'light': 'red', 'oncoming': None, 'right': 'forward', 'waypoint': 'forward', 'left': 'left'};
+ action : forward, reward : -1.0, confidence : 31.655%
+state : {'light': 'red', 'oncoming': None, 'right': 'forward', 'waypoint': 'forward', 'left': None};
+ action : left, reward : -1.0, confidence : 41.272%
+state : {'light': 'red', 'oncoming': 'left', 'right': None, 'waypoint': 'forward', 'left': None};
+ action : None, reward : 1.0, confidence : 35.294%
+state : {'light': 'green', 'oncoming': None, 'right': None, 'waypoint': 'forward', 'left': 'forward'};
+ action : right, reward : 0.5, confidence : 45.39%
+({'gamma': 0.1, 'eps_end': 0.05, 'eps_decay': 0.99, 'silent': True, 'reward_illegal': -1.0, 'max_epoch': 100, 'alpha_start': 0.3, 'alpha_end': 0.05, 'reward_correct': 2.0, 'eps_anneal': 'linear', 'reward_legal': 0.5, 'alpha_decay': 0.99, 'alpha_anneal': 'linear', 'reward_bonus': 10.0, 'save': True, 'eps_start': 0.3, 'reward_none': 1.0}, 0.52000000000000002)

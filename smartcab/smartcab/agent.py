@@ -28,6 +28,47 @@ class Entry:
     def __str__(self):
         return repr(self.state_verbose)
 
+def eval_reward(state, action):
+    "temporary function to evaluate the policy"
+    params = {
+            'reward_correct' : 2.0,
+            'reward_legal' : 0.5,
+            'reward_illegal' : -1.0,
+            'reward_none' : 1.0
+            }
+
+    light = state['light'] 
+    waypoint = state['waypoint']
+
+    reward = 0  # reward/penalty
+    move_okay = True
+
+    if action == 'forward':
+        if light != 'green':
+            move_okay = False
+    elif action == 'left':
+        if light == 'green':
+            pass
+        else:
+            move_okay = False
+    elif action == 'right':
+        pass
+
+    if action is not None:
+        if move_okay:
+            reward = params['reward_correct'] if action == waypoint else params['reward_legal']
+        else:
+            reward = params['reward_illegal']
+    else:
+        reward = params['reward_none']
+    return reward
+
+
+def maxsoftmax(x):
+    m = np.max(x)
+    ex = np.exp(x)
+    return np.max(ex/np.sum(ex))
+
 class LearningAgent(Agent):
     """An agent that learns to drive in the smartcab world."""
 
@@ -206,7 +247,10 @@ class LearningAgent(Agent):
 
     def print_policy(self):
         for state,vals in self.qtable.iteritems():
-            print 'state : {}, action : {}'.format(str(state),self.valid_actions[np.argmax(vals)])
+            str_state = str(state)
+            action = self.valid_actions[np.argmax(vals)]
+            reward = eval_reward(state.state_verbose,action)
+            print 'state : {};\n action : {}, reward : {}, confidence : {}%'.format(str_state,action,reward,np.round(maxsoftmax(vals)*100,3))
 
 def run(params):
     """Run the agent for a finite number of trials."""
@@ -269,7 +313,7 @@ def run_silent_save(params):
 
     losses = sim.getLosses() #cannot average over repeated runs
 
-    #a.print_policy() #[debug]
+    a.print_policy() #[debug]
 
     scores = np.average(scores,0)
     penalties = np.average(penalties,0)
